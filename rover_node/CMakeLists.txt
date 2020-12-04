@@ -21,6 +21,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(message_filters REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 ################################################################################
 # Build
@@ -30,12 +36,19 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}_lib
+  "src/diff_drive_controller.cpp"
+  "src/odometry.cpp"
   "src/rover.cpp"
 )
 
 set(DEPENDENCIES
   "geometry_msgs"
+  "sensor_msgs"
+  "nav_msgs"
+  "std_msgs"
   "rclcpp"
+  "tf2"
+  "tf2_ros"
 )
 
 target_link_libraries(${PROJECT_NAME}_lib)

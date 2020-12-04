@@ -4,12 +4,12 @@
 #define ROVER_NODE__ROVER_HPP_
 
 #include <geometry_msgs/msg/twist.hpp>
-// #include <nav_msgs/msg/odometry.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 #include <rclcpp/rclcpp.hpp>
-// #include <sensor_msgs/msg/battery_state.hpp>
-// #include <sensor_msgs/msg/imu.hpp>
-// #include <sensor_msgs/msg/joint_state.hpp>
-// #include <tf2_ros/transform_broadcaster.h>
+#include <sensor_msgs/msg/battery_state.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
+#include <tf2_ros/transform_broadcaster.h>
 // #include <rover_msgs/msg/sensor_state.hpp>
 
 #include <array>
@@ -23,7 +23,7 @@
 
 // #include "rover_node/control_table.hpp"
 // #include "rover_node/dynamixel_sdk_wrapper.hpp"
-// #include "rover_node/odometry.hpp"
+#include "rover_node/odometry.hpp"
 
 // #include "rover_node/devices/devices.hpp"
 // #include "rover_node/devices/motor_power.hpp"
@@ -86,7 +86,7 @@ private:
   // std::list<sensors::Sensors *> sensors_;
   // std::map<std::string, devices::Devices *> devices_;
 
-  // std::unique_ptr<Odometry> odom_;
+  std::unique_ptr<Odometry> odom_;
 
   rclcpp::Node::SharedPtr node_handle_;
 

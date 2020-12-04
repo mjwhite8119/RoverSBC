@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-// #include "rover_node/diff_drive_controller.hpp"
+#include "rover_node/diff_drive_controller.hpp"
 #include "rover_node/rover.hpp"
 
 void help_print()
@@ -40,13 +40,13 @@ int main(int argc, char * argv[])
   rclcpp::executors::SingleThreadedExecutor executor;
 
   auto rover = std::make_shared<rover::Rover>(usb_port);
-  // auto diff_drive_controller =
-  //   std::make_shared<robotis::rover::DiffDriveController>(
-  //   rover->get_wheels()->separation,
-  //   rover->get_wheels()->radius);
+  auto diff_drive_controller =
+    std::make_shared<rover::DiffDriveController>(
+    rover->get_wheels()->separation,
+    rover->get_wheels()->radius);
 
   executor.add_node(rover);
-  // executor.add_node(diff_drive_controller);
+  executor.add_node(diff_drive_controller);
   executor.spin();
 
   rclcpp::shutdown();
