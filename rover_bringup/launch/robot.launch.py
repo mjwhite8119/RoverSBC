@@ -26,9 +26,9 @@ def generate_launch_description():
             'param',
             'rover.yaml'))
 
-    # lidar_pkg_dir = LaunchConfiguration(
-    #     'lidar_pkg_dir',
-    #     default=os.path.join(get_package_share_directory('ydlidar_ros2'), 'launch'))
+    lidar_pkg_dir = LaunchConfiguration(
+        'lidar_pkg_dir',
+        default=os.path.join(get_package_share_directory('ydlidar_ros2_driver'), 'launch'))
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
@@ -54,10 +54,10 @@ def generate_launch_description():
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
 
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource([lidar_pkg_dir, '/hlds_laser.launch.py']),
-        #     launch_arguments={'port': '/dev/ttyUSB0', 'frame_id': 'base_scan'}.items(),
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([lidar_pkg_dir, '/ydlidar_launch.py']),
+            launch_arguments={}.items(),
+        ),
 
         Node(
             package='rover_node',

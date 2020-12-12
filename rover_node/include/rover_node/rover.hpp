@@ -21,7 +21,7 @@
 #include <string>
 #include <queue>
 
-// #include "rover_node/control_table.hpp"
+#include "rover_node/control_table.hpp"
 // #include "rover_node/dynamixel_sdk_wrapper.hpp"
 #include "rover_node/odometry.hpp"
 
@@ -38,7 +38,7 @@
 
 namespace rover
 {
-// extern const ControlTable extern_control_table;
+extern const ControlTable extern_control_table;
 class Rover : public rclcpp::Node
 {
 public:
