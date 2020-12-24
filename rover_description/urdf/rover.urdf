@@ -1,12 +1,38 @@
 <?xml version="1.0" ?>
 
-<robot name="rover" xmlns:xacro="https://www.ros.org/wiki/xacro" >
+<robot name="rover" xmlns:xacro="http://www.ros.org/wiki/xacro" >
     
   <xacro:include filename="$(find rover_description)/urdf/materials.xacro" />
-  <xacro:include filename="$(find rover_description)/urdf/gazebo.xacro" />
-  <xacro:include filename="$(find rover_description)/urdf/macro.xacro" />
+  <!-- <xacro:include filename="$(find rover_description)/urdf/gazebo.xacro" />
+  <xacro:include filename="$(find rover_description)/urdf/macro.xacro" /> -->
 
+  <!-- Define robot constants -->
+  <xacro:property name="base_length" value="0.095"/>
+  <xacro:property name="base_width" value="0.148"/>
+  <xacro:property name="base_height" value="0.050"/>
+
+  <xacro:property name="wheel_radius" value="0.032"/>
+  <xacro:property name="wheel_width" value="0.026"/>
+  <xacro:property name="wheel_ygap" value="0.004"/>
+  <xacro:property name="wheel_zoff" value="0.018"/>
+  <xacro:property name="wheel_xoff" value="0.0"/>
+
+  <xacro:property name="caster_radius" value="0.015"/>
+  <xacro:property name="caster_width" value="0.012"/>
+
+  <xacro:property name="caster_xoff" value="0.095"/>
+
+  <!-- Robot Base -->
   <link name="base_link">
+    
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+
     <!-- pose and inertial -->
     <pose>0 0 0.1 0 0 0</pose>
     
@@ -18,27 +44,24 @@
     
     <collision name="collision_chassis">
       <geometry>
-        <box size="0.098 0.148 0.050"/>
+        <box size="${base_length} ${base_width} ${base_height}"/>
       </geometry>
     </collision>
     
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.098 0.148 0.050"/>
-      </geometry>
-      <material name="blue"/>
-    </visual>
   </link>    
+
+  <!-- Robot Footprint -->
+  <link name="base_footprint" />
+
+  <joint name="base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0.0 0.0 ${-(wheel_radius+wheel_zoff)}" rpy="0 0 0"/>
+  </joint>
 
   <!-- Create bottom level -->  
   <link name="bottom_level">
-    <!-- <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="1" />
-      <xacro:cylinder_inertia mass="1" r="0.05" l="0.1" />
-    </inertial> -->
-
+    
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
@@ -60,6 +83,32 @@
     <parent link="base_link"/>
     <child link="bottom_level"/>
   </joint>
+
+  <!-- Create top level -->  
+  <link name="top_level">
+    
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder length="0.006" radius="0.11"/>
+      </geometry>
+      <material name="blue" />
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.006" radius="0.11"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="joint_top_level" type="fixed">
+    <origin xyz="0.0 0 0.060" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="top_level"/>
+  </joint>
+
 
   <!-- Create sensor -->  
   <link name="sensor_laser">
@@ -91,23 +140,71 @@
     <child link="sensor_laser"/>
   </joint>
 
-  <!-- Create wheel right -->  
-  <xacro:link_wheel name="link_right_wheel" />
-  <!-- Left Wheel link -->
-  <xacro:link_wheel name="link_left_wheel" />
-    
-  <!--   Joint for right wheel  -->
-  <xacro:joint_wheel name="joint_right_wheel"  child="link_right_wheel"  origin_xyz="-0.00 0.09 -0.008"  />
-  <!--   Joint for left wheel  -->
-  <xacro:joint_wheel name="joint_left_wheel"   child="link_left_wheel"   origin_xyz="-0.00 -0.09 -0.008"  />
-    
-  <!-- Create caster front -->  
-  <xacro:link_caster name="link_front_caster" />
-  <!-- Create caster back -->  
-  <xacro:link_caster name="link_back_caster" />
+  <!-- Wheels -->
+  <xacro:macro name="wheel" params="prefix x_reflect y_reflect">
+    <link name="${prefix}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+            <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+      </visual>
+    </link>
 
-  <!--   Joint for front caster  -->
-  <xacro:joint_caster name="joint_front_caster"  child="link_front_caster"  origin_xyz="-0.09 0.0 0"  />
-  <!--   Joint for back caster  -->
-  <xacro:joint_caster name="joint_back_caster"  child="link_back_caster"  origin_xyz="0.09 0.0 0"  />
+    <joint name="${prefix}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_link"/>
+      <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*((base_width/2)+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:wheel prefix="drivewhl_l" x_reflect="-1" y_reflect="1" />
+  <xacro:wheel prefix="drivewhl_r" x_reflect="-1" y_reflect="-1" />
+
+   <!-- caster -->
+   <xacro:macro name="caster" params="prefix x_reflect y_reflect">
+    <link name="${prefix}_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+            <cylinder radius="${caster_radius}" length="${caster_width}"/>
+        </geometry>
+        <material name="Gray">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_link"/>
+      <origin xyz="${y_reflect*caster_xoff} 0.0 ${-(base_height/2)}" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:caster prefix="caster_l" x_reflect="-1" y_reflect="1" />
+  <xacro:caster prefix="caster_r" x_reflect="-1" y_reflect="-1" />
+
+   <!-- Caster Wheel -->
+  <!-- <link name="front_caster">
+    <visual>
+      <geometry>
+        <sphere radius="${-(wheel_radius+wheel_zoff-(base_height/2))}"/>
+      </geometry>
+      <material name="Cyan">
+        <color rgba="0 1.0 1.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster"/>
+    <origin xyz="${caster_xoff} 0.0 ${-(base_height/2)}" rpy="0 0 0"/>
+  </joint> -->
+
 </robot>

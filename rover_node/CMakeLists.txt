@@ -49,16 +49,21 @@ set(DEPENDENCIES
   "rclcpp"
   "tf2"
   "tf2_ros"
+  "tf2_msgs"
 )
 
 target_link_libraries(${PROJECT_NAME}_lib)
 ament_target_dependencies(${PROJECT_NAME}_lib ${DEPENDENCIES})
 
 set(EXECUTABLE_NAME "rover_ros")
+set(BROADCASTER_NAME "rover_tf2_broadcaster")
 
 add_executable(${EXECUTABLE_NAME} src/node_main.cpp)
 target_link_libraries(${EXECUTABLE_NAME} ${PROJECT_NAME}_lib)
 ament_target_dependencies(${EXECUTABLE_NAME} ${DEPENDENCIES})
+
+add_executable(${BROADCASTER_NAME} src/rover_tf2_broadcaster.cpp)
+ament_target_dependencies(${BROADCASTER_NAME} ${DEPENDENCIES})
 
 ################################################################################
 # Install
@@ -67,7 +72,9 @@ install(DIRECTORY param
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(TARGETS ${EXECUTABLE_NAME}
+install(TARGETS 
+  ${EXECUTABLE_NAME} 
+  ${BROADCASTER_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
