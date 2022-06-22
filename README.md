@@ -14,6 +14,9 @@
 
     sudo apt install ros-foxy-example-interfaces
 
+    sudo apt install ros-foxy-xacro
+
+## Create a Workspace
 
     mkdir -p dev_ws/src
     cd dev_ws/src

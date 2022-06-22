@@ -26,9 +26,9 @@ def generate_launch_description():
             'param',
             'rover.yaml'))
 
-    lidar_pkg_dir = LaunchConfiguration(
-        'lidar_pkg_dir',
-        default=os.path.join(get_package_share_directory('ydlidar_ros2_driver'), 'launch'))
+    # lidar_pkg_dir = LaunchConfiguration(
+    #     'lidar_pkg_dir',
+    #     default=os.path.join(get_package_share_directory('ydlidar_ros2_driver'), 'launch'))
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
